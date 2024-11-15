@@ -1,0 +1,127 @@
+#include <DHT.h>
+#include <DHT_U.h>
+#include <Adafruit_Sensor.h>
+
+
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+//Wifi libraries
+//#include <WiFi.h>
+//#include <WiFiClient.h>
+//#include <WebServer.h>
+//#include <ESPmDNS.h>
+
+//****************************************************************************
+
+#define DHTPIN 14     // Digital pin connected to the DHT sensor 
+#define DHTTYPE    DHT22     // DHT 22 (AM2302)
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+//DHT_Unified dht(DHTPIN, DHTTYPE);
+DHT dht(DHTPIN, DHTTYPE);
+
+uint32_t delayMS;
+
+float temperature;
+float humidity;
+// Create AsyncWebServer object on port 80
+//AsyncWebServer server(80);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+
+  Serial.println(F("DHTxx Unified Sensor Example"));
+  // Print temperature sensor details.
+  sensor_t sensor;
+  /*dht.temperature().getSensor(&sensor);
+  Serial.println(F("------------------------------------"));
+  Serial.println(F("Temperature Sensor"));
+  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
+  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
+  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
+  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("°C"));
+  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("°C"));
+  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("°C"));
+  Serial.println(F("------------------------------------"));
+  // Print humidity sensor details.
+  dht.humidity().getSensor(&sensor);
+  Serial.println(F("Humidity Sensor"));
+  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
+  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
+  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
+  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("%"));
+  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("%"));
+  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("%"));
+  Serial.println(F("------------------------------------"));
+  // Set delay between sensor readings based on sensor details.
+  delayMS = sensor.min_delay / 1000;
+*/
+
+  
+}
+  
+  
+
+
+void loop() {
+  temperature= dht.readTemperature();
+  humidity= dht.readHumidity();
+
+// Delay between measurements.
+  Serial.print("Temperature:");
+  Serial.print(temperature);Serial.println(F("°C"));
+  Serial.print(temperature * 1.8 +32);Serial.println(F("°F"));
+  Serial.print("Humidity:");
+  Serial.print(humidity);Serial.println(F("%"));
+  Serial.println("");
+  
+  delay(2000);
+ 
+
+  display.clearDisplay(); // Clear display buffer
+  //display.setTextSize(2);
+  //display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.print(F("T:"));
+  display.print(temperature);
+  display.print((char)247);display.print("C");
+  display.setCursor(0, 17);
+  display.println(temperature * 1.8 + 32);
+  display.setCursor(65, 17);
+  display.print((char)247);display.print("F");
+  //Serial.println(temperature);
+
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 34);
+  display.print("Humidity:");
+  display.setCursor(0, 51);
+  display.println(humidity);
+  display.setCursor(65, 51);
+  display.println("%");
+  //Serial.print(humidity);
+
+
+
+  display.display();
+  
+}
+
+
+
+
